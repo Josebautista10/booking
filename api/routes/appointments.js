@@ -1,5 +1,6 @@
 import express from 'express'
 import Appointment from '../models/Appointment.js'
+import createError from '../models/utils/error.js'
 const router = express.Router()
 
 // CREATE
@@ -40,17 +41,29 @@ router.delete('/:id', async (req, res) => {
     res.sendStatus(500).json(error)
   }
 })
+
 // GET
-router.get('/', async (req, res) => {
+router.get('/:id', async (req, res) => {
+  try {
+    const appointment = await Appointment.findById(
+      req.params.id,
+    )
+    res.json(appointment)
+  } catch (error) {
+    res.sendStatus(500).json(error)
+  }
+})
+
+// GET ALL
+router.get('/', async (req, res, next) => {
   try {
     const appointments = await Appointment.find(
       req.params.id
     )
     res.json(appointments)
   } catch (error) {
-    res.sendStatus(500).json(error)
+    next(error)
   }
 })
-// GET ALL
 
 export default router
